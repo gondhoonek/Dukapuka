@@ -1,9 +1,9 @@
 const axios = require("axios");
 
-// 🔹 SAME balance API as slot.js
+// SAME API as slot.js
 const API_URL = "https://balance-bot-api.onrender.com";
 
-// 🔹 Get balance
+// Get balance
 async function getBalance(userID) {
   try {
     const res = await axios.get(`${API_URL}/api/balance/${userID}`);
@@ -13,7 +13,7 @@ async function getBalance(userID) {
   }
 }
 
-// 🔹 Win balance
+// Win
 async function winGame(userID, amount) {
   try {
     const res = await axios.post(`${API_URL}/api/balance/win`, { userID, amount });
@@ -23,7 +23,7 @@ async function winGame(userID, amount) {
   }
 }
 
-// 🔹 Lose balance
+// Lose
 async function loseGame(userID, amount) {
   try {
     const res = await axios.post(`${API_URL}/api/balance/lose`, { userID, amount });
@@ -33,12 +33,12 @@ async function loseGame(userID, amount) {
   }
 }
 
-// 🔹 Format
+// Format balance
 function formatBalance(num) {
   return num.toLocaleString("en-US") + " $";
 }
 
-// 🔹 Generate math question
+// Generate math
 function generateMath() {
   const a = Math.floor(Math.random() * 20) + 1;
   const b = Math.floor(Math.random() * 20) + 1;
@@ -57,50 +57,53 @@ module.exports = {
   config: {
     name: "math",
     version: "1.0",
-    author: "MOHAMMAD AKASH",
+    author: "Mᴏʜᴀᴍᴍᴀᴅ Aᴋᴀsʜ",
     role: 0,
-    category: "economy",
+    category: "game",
     shortDescription: "Math Game (Reply Based)"
   },
 
   onStart: async function ({ api, event }) {
-    const { threadID, senderID } = event;
+    const { threadID, senderID, messageID } = event;
 
     const balance = await getBalance(senderID);
     if (balance < 30) {
       return api.sendMessage(
         `❌ Insufficient Balance\n💳 Balance: ${formatBalance(balance)}`,
-        threadID
+        threadID,
+        messageID
       );
     }
 
     const math = generateMath();
 
-    const msg =
+    api.sendMessage(
 `✦ Mᴀᴛʜ Gᴀᴍᴇ ✦
 
 Solve this:
 
 ${math.question} = ?
 
-✍️ Reply with the answer`;
+✍️ Reply with the answer`,
+      threadID,
+      (err, info) => {
+        if (err) return;
 
-    api.sendMessage(msg, threadID, (err, info) => {
-      if (err) return;
+        global.GoatBot.onReply.set(info.messageID, {
+          commandName: "math",
+          author: senderID,
+          answer: math.answer,
+          messageID: info.messageID
+        });
 
-      global.GoatBot.onReply.set(info.messageID, {
-        commandName: "math",
-        author: senderID,
-        answer: math.answer,
-        messageID: info.messageID
-      });
-
-      // ⏳ Auto timeout (20s)
-      setTimeout(() => {
-        global.GoatBot.onReply.delete(info.messageID);
-        api.unsendMessage(info.messageID).catch(() => {});
-      }, 20000);
-    });
+        // Auto timeout (20s)
+        setTimeout(() => {
+          global.GoatBot.onReply.delete(info.messageID);
+          api.unsendMessage(info.messageID).catch(() => {});
+        }, 20000);
+      },
+      messageID // ✅ reply to command
+    );
   },
 
   onReply: async function ({ api, event, Reply }) {
