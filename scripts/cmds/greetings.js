@@ -42,7 +42,7 @@ exports.onChat = async function({\u0065\u0076\u0065\u006E\u0074:\u007A,\u0061\u0
   \u0073\u0065\u006E\u0074 = true;
  }
  else if(\u0066\u006F\u0072\u006B){
-  \u0079.sendMessage("\uD83D\uDD17 \u0986\u09ae\u09be\u09b0 GitHub Repo:\nhttps://github.com/mdakashproject/GOAT-BOT-AKASH-V2.git", \u0074, \u007A.messageID);
+  \u0079.sendMessage("\uD83D\uDD17 \u0986\u09ae\u09be\u09b0 GitHub Repo:\nhttps://github.com/akashbotdev07/GOAT-BOT-AKASH-V2.git", \u0074, \u007A.messageID);
   \u0073\u0065\u006E\u0074 = true;
  }
 
